@@ -1,4 +1,4 @@
-package dev.chalinas.priolist.data
+package dev.chalinas.priolist
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

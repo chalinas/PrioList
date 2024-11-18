@@ -13,7 +13,7 @@
         android:theme="@style/Theme.PrioList"
         tools:targetApi="31">
         <activity
-            android:name=".data.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.PrioList">
