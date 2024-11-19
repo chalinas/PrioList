@@ -13,35 +13,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import dev.chalinas.priolist.ui.theme.PrioListTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
+    private lateinit var taskService: TaskService
+    private lateinit var categoryService: CategoryService
+    private lateinit var reminderService: ReminderService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            PrioListTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
+        setContentView(R.layout.activity_main)
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        taskService = TaskService(TaskRepositoryImpl(AppDatabase.getInstance(this)))
+        categoryService = CategoryService(CategoryRepositoryImpl(AppDatabase.getInstance(this)))
+        reminderService = ReminderService(ReminderRepositoryImpl(AppDatabase.getInstance(this)))
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    PrioListTheme {
-        Greeting("Android")
+        // Utilizar los servicios para interactuar con la base de datos
+        val tasks = taskService.getAllTasks()
+        val categories = categoryService.getAllCategories()
+        val reminders = reminderService.getAllReminders()
     }
 }
