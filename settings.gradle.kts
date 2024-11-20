@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "PrioList"
+rootProject.name = "Priolist"
 include(":app")
  

@@ -1,20 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
-    id("com.google.dagger.hilt.android")
-    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
-
-
 }
 
 android {
-    namespace = "dev.chalinas.priolist"
-    compileSdk = 35
+    namespace = "com.chalinas.priolist"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = "dev.chalinas.priolist"
-        minSdk = 34
+        applicationId = "com.chalinas.priolist"
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -38,54 +33,16 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
 
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
-    implementation(libs.support.annotations)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.ui.test.junit4)
-    debugImplementation(libs.androidx.ui.tooling)
-    debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(libs.hilt.android)
-    implementation("com.google.dagger:dagger-compiler:2.51.1")
-    ksp("com.google.dagger:dagger-compiler:2.51.1")
-
-    //Para usar Room
-    implementation(libs.androidx.room.runtime)
-    annotationProcessor(libs.androidx.room.compiler)
-
-    // Extensiones Kotlin y Coroutines
-    implementation(libs.androidx.room.ktx)
-
-    // RxJava2
-    implementation(libs.androidx.room.rxjava2)
-
-    // RxJava3
-    implementation(libs.androidx.room.rxjava3)
-
-    // Guava
-    implementation(libs.androidx.room.guava)
-
-    // Test Helpers
-    testImplementation(libs.androidx.room.testing)
-
-    // Paging 3
-    implementation(libs.androidx.room.paging)
 }
-
-

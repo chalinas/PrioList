@@ -1,4 +1,4 @@
-package dev.chalinas.priolist
+package com.chalinas.priolist
 
 import org.junit.Test
 
