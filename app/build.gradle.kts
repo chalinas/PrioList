@@ -1,16 +1,19 @@
+import org.gradle.kotlin.dsl.android
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
 }
 
 android {
     namespace = "com.chalinas.priolist"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.chalinas.priolist"
         minSdk = 28
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -33,6 +36,11 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    buildFeatures {
+        viewBinding = true //for viewbinding
+        dataBinding = true //for dataBinding
+    }
 }
 
 dependencies {
@@ -45,4 +53,12 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+        val room_version = "2.6.1"
+
+        implementation("androidx.room:room-runtime:$room_version")
+
+        // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+        // See Add the KSP plugin to your project
+        ksp("androidx.room:room-compiler:$room_version")
+
 }
