@@ -3,7 +3,17 @@
     <style name="Base.Theme.PrioList" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="fontFamily">@font/ubuntu_regular</item>
+        <item name="android:statusBarColor">@color/black</item>
     </style>
 
     <style name="Theme.PrioList" parent="Base.Theme.PrioList" />
+
+    <style name="CardViewStyle" parent="Widget.Material3.CardView.Outlined">
+        <item name="shapeAppearanceOverlay">@style/CutShape</item>
+    </style>
+    <style name="CutShape" parent="ShapeAppearance.Material3.Corner.Medium">
+        <item name="cornerSize">12dp</item>
+        <item name="cornerFamily">cut</item>
+    </style>
 </resources>
