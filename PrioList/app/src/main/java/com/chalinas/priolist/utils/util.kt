@@ -16,7 +16,7 @@ fun Dialog.setupDialog(layoutResId: Int) {
     setCancelable(false)
 }
 
-private fun validateEditText(editText: EditText, textTextInputEditText: TextInputEditText): Boolean {
+fun validateEditText(editText: EditText, textTextInputEditText: TextInputEditText): Boolean {
     return when {
         editText.text.toString().trim().isEmpty() -> {
             textTextInputLayout.error = "Required"
