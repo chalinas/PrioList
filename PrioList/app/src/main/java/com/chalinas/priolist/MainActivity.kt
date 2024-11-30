@@ -17,14 +17,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val addTaskDialog: Dialog by lazy {
-        Dialog(this).apply{
+        Dialog(this,R.style.DialogCustomTheme).apply{
             setupDialog(R.layout.add_task_dialog)
         }
     }
 
     private val updateTaskDialog: Dialog by lazy {
-        Dialog(this).apply{
+        Dialog(this,R.style.DialogCustomTheme).apply{
             setupDialog(R.layout.update_task_dialog)
+        }
+    }
+
+    private val loadingDialog: Dialog by lazy {
+        Dialog(this,R.style.DialogCustomTheme).apply{
+            setupDialog(R.layout.loading_dialog)
         }
     }
 
@@ -38,8 +44,12 @@ class MainActivity : AppCompatActivity() {
         addCloseImg.setOnClickListener { addTaskDialog.dismiss() }
         updateCloseImg.setOnClickListener { updateTaskDialog.dismiss() }
 
+
+
         mainBinding.addTaskFABtn.setOnClickListener {
             addTaskDialog.show()
         }
+
+
     }
 }
