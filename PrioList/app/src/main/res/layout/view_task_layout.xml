@@ -7,19 +7,20 @@
     android:layout_marginHorizontal="8dp"
     android:layout_marginVertical="4dp"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/white">
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="10dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="10dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="false"
             android:layout_centerVertical="true"
-            android:layout_toStartOf="@id/editDeleteLayout"
+            android:layout_toStartOf="@id/editDeleteL"
             android:orientation="vertical">
 
             <TextView
@@ -54,8 +55,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/editDeleteLayout"
+            android:id="@+id/editDeleteL"
             android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:orientation="vertical">
             <ImageView
                 android:layout_width="35dp"
@@ -70,7 +72,7 @@
                 android:layout_height="35dp"
                 android:id="@+id/deleteImg"
                 android:layout_marginVertical="4dp"
-                android:src="@drawable/ic_edit"/>
+                android:src="@drawable/ic_delete"/>
             <!-- TODO: add image. part 1 -->
 
         </LinearLayout>
