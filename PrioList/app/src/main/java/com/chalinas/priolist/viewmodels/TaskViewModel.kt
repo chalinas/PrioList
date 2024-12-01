@@ -7,9 +7,12 @@ import com.chalinas.priolist.models.Task
 import com.chalinas.priolist.repository.TaskRepository
 import com.chalinas.priolist.utils.Resource
 
+
 class TaskViewModel (application: Application) : AndroidViewModel(application){
 
     private val taskRepository = TaskRepository(application)
+
+    fun getTaskList()  = taskRepository.getTaskList()
 
     fun insertTask(task: Task): MutableLiveData<Resource<Long>> {
         return taskRepository.insertTask(task)

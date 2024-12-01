@@ -7,11 +7,9 @@ import android.text.TextWatcher
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import com.chalinas.priolist.adapters.TaskRecyclerViewAdapter
 import com.chalinas.priolist.databinding.ActivityMainBinding
 import com.chalinas.priolist.models.Task
 import com.chalinas.priolist.utils.Status
@@ -22,6 +20,9 @@ import com.chalinas.priolist.utils.validateEditText
 import com.chalinas.priolist.viewmodels.TaskViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.Date
 import java.util.UUID
 
@@ -53,9 +54,15 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TaskViewModel::class.java]
     }
 
+    private val taskRecyclerViewAdapter : TaskRecyclerViewAdapter by lazy {
+        TaskRecyclerViewAdapter()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
+
+        mainBinding.taskRV.adapter = taskRecyclerViewAdapter
 
         // Empieza incluir tarea
         val addCloseImg = addTaskDialog.findViewById<ImageView>(R.id.closeImg)
@@ -155,5 +162,31 @@ class MainActivity : AppCompatActivity() {
             }
         }
         //Acaba actualizar tarea
+        callGetTaskList()
+    }
+
+
+
+
+    private fun callGetTaskList() {
+        loadingDialog.show()
+        CoroutineScope(Dispatchers.Main).launch {
+        taskViewModel.getTaskList().collect{
+            when(it.status){
+                Status.LOADING -> loadingDialog.show()
+                Status.SUCCESS -> {
+                    it.data?.collect{taskList->
+                    loadingDialog.dismiss()
+                        taskRecyclerViewAdapter.addAllTask(taskList)
+                    }
+                }
+                Status.ERROR -> {
+                    loadingDialog.dismiss()
+                    it.message?.let { it1 ->longToastShow(it1) }
+                }
+            }
+        }
+        }
+
     }
 }
