@@ -4,6 +4,7 @@ import android.app.Dialog
 import android.widget.EditText
 import android.widget.LinearLayout
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 
 
 fun Dialog.setupDialog(layoutResId: Int) {
@@ -16,7 +17,7 @@ fun Dialog.setupDialog(layoutResId: Int) {
     setCancelable(false)
 }
 
-fun validateEditText(editText: EditText, textTextInputEditText: TextInputEditText): Boolean {
+fun validateEditText(editText: EditText, textTextInputLayout: TextInputLayout): Boolean {
     return when {
         editText.text.toString().trim().isEmpty() -> {
             textTextInputLayout.error = "Required"
