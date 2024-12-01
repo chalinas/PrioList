@@ -11,11 +11,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.chalinas.priolist.databinding.ActivityMainBinding
+import com.chalinas.priolist.models.Task
+import com.chalinas.priolist.utils.Status
+import com.chalinas.priolist.utils.clearEditText
+import com.chalinas.priolist.utils.longToastShow
 import com.chalinas.priolist.utils.setupDialog
 import com.chalinas.priolist.utils.validateEditText
+import com.chalinas.priolist.viewmodels.TaskViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import java.util.Date
+import java.util.UUID
 
 class MainActivity : AppCompatActivity() {
 
@@ -39,6 +47,10 @@ class MainActivity : AppCompatActivity() {
         Dialog(this,R.style.DialogCustomTheme).apply{
             setupDialog(R.layout.loading_dialog)
         }
+    }
+
+    private val taskViewModel : TaskViewModel by lazy {
+        ViewModelProvider(this)[TaskViewModel::class.java]
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +84,8 @@ class MainActivity : AppCompatActivity() {
 
 
         mainBinding.addTaskFABtn.setOnClickListener {
+            clearEditText(addETTitle, addETTitleL)
+            clearEditText(addETDesc, addETDescL)
             addTaskDialog.show()
         }
         val saveTaskBtn = addTaskDialog.findViewById<Button>(R.id.saveTaskBtn)
@@ -80,8 +94,28 @@ class MainActivity : AppCompatActivity() {
                 && validateEditText(addETDesc, addETDescL)
                 ){
                 addTaskDialog.dismiss()
-                Toast.makeText(this, "Validated!", Toast.LENGTH_SHORT).show()
-                loadingDialog.show()
+                val newTask = Task(
+                    UUID.randomUUID().toString(),
+                    addETTitle.text.toString().trim(),
+                    addETDesc.text.toString().trim(),
+                    Date()
+                )
+                taskViewModel.insertTask(newTask).observe(this){
+                    when(it.status){
+                        Status.LOADING -> loadingDialog.show()
+                        Status.SUCCESS -> {
+                            loadingDialog.dismiss()
+                            if (it.data?.toInt() != -1){
+                                longToastShow("Task saved!")
+                            }
+                        }
+                        Status.ERROR -> {
+                            loadingDialog.dismiss()
+                            it.message?.let { it1 ->longToastShow(it1) }
+                        }
+                    }
+                }
+
             }
         }
         //Acaba incluir tarea

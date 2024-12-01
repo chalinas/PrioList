@@ -6,14 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.chalinas.priolist.converters.TypeConverter
+import com.chalinas.priolist.dao.TaskDao
 import com.chalinas.priolist.models.Task
 
 @Database(
     entities = [Task::class],
-    version = 1
+    version = 1,
+    exportSchema = false
 )
 @TypeConverters(TypeConverter::class)
 abstract class TaskDatabase : RoomDatabase() {
+
+    abstract val taskDao: TaskDao
+
     companion object {
         @Volatile
         private var INSTANCE: TaskDatabase? = null
