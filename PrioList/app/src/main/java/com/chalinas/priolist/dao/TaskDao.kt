@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.chalinas.priolist.models.Task
 import kotlinx.coroutines.flow.Flow
 
@@ -19,4 +20,10 @@ interface TaskDao {
 
     @Delete
     suspend fun deleteTask(task: Task) : Int
+
+    @Update
+    suspend fun updateTask(task: Task) : Int
+
+    @Query("UPDATE Task SET title = :title, description = :description WHERE taksId = :taskId")
+    suspend fun updateTaskParticularField(taskId:String,title:String,description:String) : Int
 }

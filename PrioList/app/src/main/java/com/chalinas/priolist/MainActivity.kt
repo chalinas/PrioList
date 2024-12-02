@@ -54,33 +54,10 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TaskViewModel::class.java]
     }
 
-    private val taskRecyclerViewAdapter : TaskRecyclerViewAdapter by lazy {
-        TaskRecyclerViewAdapter{position, task ->
-            taskViewModel
-                .deleteTask(task)
-                .observe(this){
-                    when(it.status){
-                        Status.LOADING -> loadingDialog.show()
-                        Status.SUCCESS -> {
-                            loadingDialog.dismiss()
-                            if (it.data?.toInt() != -1){
-                                longToastShow("Task deleted!")
-                            }
-                        }
-                        Status.ERROR -> {
-                            loadingDialog.dismiss()
-                            it.message?.let { it1 ->longToastShow(it1) }
-                        }
-                    }
-                }
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(mainBinding.root)
 
-        mainBinding.taskRV.adapter = taskRecyclerViewAdapter
 
         // Empieza incluir tarea
         val addCloseImg = addTaskDialog.findViewById<ImageView>(R.id.closeImg)
@@ -170,23 +147,81 @@ class MainActivity : AppCompatActivity() {
         updateCloseImg.setOnClickListener { updateTaskDialog.dismiss() }
 
         val updateTaskBtn = updateTaskDialog.findViewById<Button>(R.id.updateTaskBtn)
-        updateTaskBtn.setOnClickListener {
-            if(validateEditText(updateETTitle, updateETTitleL)
-                && validateEditText(updateETDesc, updateETDescL)
-            ){
-                updateTaskDialog.dismiss()
-                Toast.makeText(this, "Validated!", Toast.LENGTH_SHORT).show()
-                loadingDialog.show()
+
+        //Acaba actualizar tarea
+
+        val taskRecyclerViewAdapter = TaskRecyclerViewAdapter{type,position, task ->
+            if(type == "delete"){
+            taskViewModel
+                .deleteTask(task)
+                .observe(this){
+                    when(it.status){
+                        Status.LOADING -> loadingDialog.show()
+                        Status.SUCCESS -> {
+                            loadingDialog.dismiss()
+                            if (it.data?.toInt() != -1){
+                                longToastShow("Task deleted!")
+                            }
+                        }
+                        Status.ERROR -> {
+                            loadingDialog.dismiss()
+                            it.message?.let { it1 ->longToastShow(it1) }
+                        }
+                    }
+                }
+             }
+        else if (type == "update"){
+            updateETTitle.setText(task.title)
+            updateETDesc.setText(task.description)
+            updateTaskBtn.setOnClickListener {
+                if (validateEditText(updateETTitle, updateETTitleL)
+                    && validateEditText(updateETDesc, updateETDescL)
+                ) {
+                    val updateTask = Task(
+                        task.id,
+                        updateETTitle.text.toString().trim(),
+                        updateETDesc.text.toString().trim(),
+                        Date()
+                    )
+                    updateTaskDialog.dismiss()
+                    loadingDialog.show()
+                    taskViewModel
+                        //.updateTask(updateTask)
+                        // SI SE CAMBIA FECHA ACTIVAR ARRIBA
+                        .updateTaskParticularField(task.id,
+                            updateETTitle.text.toString().trim(),
+                            updateETDesc.text.toString().trim()
+                        )
+                        //SI NO SE CAMBIA FECHA AL FINAL DEJAR COMO ESTA
+                        .observe(this) {
+                            when (it.status) {
+                                Status.LOADING -> loadingDialog.show()
+                                Status.SUCCESS -> {
+                                    loadingDialog.dismiss()
+                                    if (it.data?.toInt() != -1) {
+                                        longToastShow("Task updated!")
+                                    }
+                                }
+
+                                Status.ERROR -> {
+                                    loadingDialog.dismiss()
+                                    it.message?.let { it1 -> longToastShow(it1) }
+                                }
+                            }
+                        }
+                }
+            }
+                updateTaskDialog.show()
             }
         }
-        //Acaba actualizar tarea
-        callGetTaskList()
+        mainBinding.taskRV.adapter = taskRecyclerViewAdapter
+        callGetTaskList(taskRecyclerViewAdapter)
     }
 
 
 
 
-    private fun callGetTaskList() {
+    private fun callGetTaskList(taskRecyclerViewAdapter: TaskRecyclerViewAdapter) {
         loadingDialog.show()
         CoroutineScope(Dispatchers.Main).launch {
         taskViewModel.getTaskList().collect{
