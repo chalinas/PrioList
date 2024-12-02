@@ -38,4 +38,17 @@ class TaskRepository(application: Application) {
 
         }
     }
+
+    fun deleteTask(task: Task) = MutableLiveData<Resource<Int>>().apply {
+        postValue(Loading())
+        try {
+            CoroutineScope(Dispatchers.IO).launch{
+                val result = taskDao.deleteTask(task)
+                postValue(Success(result))
+            }
+        } catch (e: Exception) {
+            postValue(Error(e.message.toString()))
+
+        }
+    }
 }

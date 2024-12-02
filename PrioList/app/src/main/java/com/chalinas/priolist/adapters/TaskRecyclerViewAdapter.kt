@@ -3,6 +3,7 @@ package com.chalinas.priolist.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.chalinas.priolist.models.Task
@@ -10,7 +11,9 @@ import com.chalinas.priolist.R
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class TaskRecyclerViewAdapter:
+class TaskRecyclerViewAdapter(
+    private val deleteCallback: (position: Int, task: Task) -> Unit
+):
 RecyclerView.Adapter<TaskRecyclerViewAdapter.ViewHolder>() {
 
     private val taskList = arrayListOf<Task>()
@@ -19,6 +22,8 @@ RecyclerView.Adapter<TaskRecyclerViewAdapter.ViewHolder>() {
         val titleTxt : TextView = itemView.findViewById(R.id.titleTxt)
         val descTxt : TextView = itemView.findViewById(R.id.descTxt)
         val dateTxt : TextView = itemView.findViewById(R.id.dateTxt)
+
+        val deleteImg : ImageView = itemView.findViewById(R.id.deleteImg)
     }
 
     fun addAllTask(newTaskList: List<Task>){
@@ -50,6 +55,12 @@ RecyclerView.Adapter<TaskRecyclerViewAdapter.ViewHolder>() {
 
         val dateFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss ",Locale.getDefault())
         holder.dateTxt.text = dateFormatter.format(task.date)
+
+        holder.deleteImg.setOnClickListener {
+            if (holder.adapterPosition != -1) {
+                deleteCallback(holder.adapterPosition, task)
+            }
+        }
     }
 
     override fun getItemCount(): Int {
