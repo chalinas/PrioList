@@ -9,6 +9,9 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
+import com.chalinas.priolist.adapters.TaskRVVBListAdapter
+import com.chalinas.priolist.adapters.TaskRVViewBindingAdapter
 import com.chalinas.priolist.adapters.TaskRecyclerViewAdapter
 import com.chalinas.priolist.databinding.ActivityMainBinding
 import com.chalinas.priolist.models.Task
@@ -150,7 +153,7 @@ class MainActivity : AppCompatActivity() {
 
         //Acaba actualizar tarea
 
-        val taskRecyclerViewAdapter = TaskRecyclerViewAdapter{type,position, task ->
+        val taskRVVBListAdapter = TaskRVVBListAdapter{ type, position, task ->
             if(type == "delete"){
             taskViewModel
                 .deleteTask(task)
@@ -185,10 +188,10 @@ class MainActivity : AppCompatActivity() {
                     )
                     updateTaskDialog.dismiss()
                     loadingDialog.show()
-                    taskViewModel
+                    taskViewModel.
                         //.updateTask(updateTask)
-                        // SI SE CAMBIA FECHA ACTIVAR ARRIBA
-                        .updateTaskParticularField(task.id,
+                        // SI SE CAMBIA FECHA DESCOMENTAR updateTask Y COMENTAR updateTaskParticular
+                            updateTaskParticularField(task.id,
                             updateETTitle.text.toString().trim(),
                             updateETDesc.text.toString().trim()
                         )
@@ -214,14 +217,20 @@ class MainActivity : AppCompatActivity() {
                 updateTaskDialog.show()
             }
         }
-        mainBinding.taskRV.adapter = taskRecyclerViewAdapter
-        callGetTaskList(taskRecyclerViewAdapter)
+        mainBinding.taskRV.adapter = taskRVVBListAdapter
+        taskRVVBListAdapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                mainBinding.taskRV.smoothScrollToPosition(positionStart)
+            }
+        })
+        callGetTaskList(taskRVVBListAdapter)
     }
 
 
 
 
-    private fun callGetTaskList(taskRecyclerViewAdapter: TaskRecyclerViewAdapter) {
+    private fun callGetTaskList(taskRecyclerViewAdapter: TaskRVVBListAdapter) {
         loadingDialog.show()
         CoroutineScope(Dispatchers.Main).launch {
         taskViewModel.getTaskList().collect{
@@ -230,7 +239,7 @@ class MainActivity : AppCompatActivity() {
                 Status.SUCCESS -> {
                     it.data?.collect{taskList->
                     loadingDialog.dismiss()
-                        taskRecyclerViewAdapter.addAllTask(taskList)
+                        taskRecyclerViewAdapter.submitList(taskList)
                     }
                 }
                 Status.ERROR -> {
