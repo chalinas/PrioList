@@ -2,60 +2,129 @@ package com.chalinas.priolist.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.chalinas.priolist.databinding.ViewTaskLayoutBinding
+import com.chalinas.priolist.databinding.ViewTaskGridLayoutBinding
+import com.chalinas.priolist.databinding.ViewTaskListLayoutBinding
 import com.chalinas.priolist.models.Task
 import java.text.SimpleDateFormat
 import java.util.Locale
 
 class TaskRVVBListAdapter(
-    private val deleteUpdateCallback: (type: String, position: Int, task: Task) -> Unit
-):
-    ListAdapter<Task,TaskRVVBListAdapter.ViewHolder>(DiffCallback()) {
+    private val isList: MutableLiveData<Boolean>,
+    private val deleteUpdateCallback: (type: String, position: Int, task: Task) -> Unit,
+) :
+    ListAdapter<Task,RecyclerView.ViewHolder>(DiffCallback()) {
 
-    class ViewHolder(val viewTaskLayoutBinding: ViewTaskLayoutBinding) : RecyclerView.ViewHolder(viewTaskLayoutBinding.root)
+
+
+    class ListTaskViewHolder(private val viewTaskListLayoutBinding: ViewTaskListLayoutBinding) :
+        RecyclerView.ViewHolder(viewTaskListLayoutBinding.root) {
+
+        fun bind(
+            task: Task,
+            deleteUpdateCallback: (type: String, position: Int, task: Task) -> Unit,
+        ) {
+            viewTaskListLayoutBinding.titleTxt.text = task.title
+            viewTaskListLayoutBinding.descrTxt.text = task.description
+
+            val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss a", Locale.getDefault())
+
+            viewTaskListLayoutBinding.dateTxt.text = dateFormat.format(task.date)
+
+            viewTaskListLayoutBinding.deleteImg.setOnClickListener {
+                if (adapterPosition != -1) {
+                    deleteUpdateCallback("delete", adapterPosition, task)
+                }
+            }
+            viewTaskListLayoutBinding.editImg.setOnClickListener {
+                if (adapterPosition != -1) {
+                    deleteUpdateCallback("update", adapterPosition, task)
+                }
+            }
+        }
+    }
+
+
+    class GridTaskViewHolder(private val viewTaskGridLayoutBinding: ViewTaskGridLayoutBinding) :
+        RecyclerView.ViewHolder(viewTaskGridLayoutBinding.root) {
+
+        fun bind(
+            task: Task,
+            deleteUpdateCallback: (type: String, position: Int, task: Task) -> Unit,
+        ) {
+            viewTaskGridLayoutBinding.titleTxt.text = task.title
+            viewTaskGridLayoutBinding.descrTxt.text = task.description
+
+            val dateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss a", Locale.getDefault())
+
+            viewTaskGridLayoutBinding.dateTxt.text = dateFormat.format(task.date)
+
+            viewTaskGridLayoutBinding.deleteImg.setOnClickListener {
+                if (adapterPosition != -1) {
+                    deleteUpdateCallback("delete", adapterPosition, task)
+                }
+            }
+            viewTaskGridLayoutBinding.editImg.setOnClickListener {
+                if (adapterPosition != -1) {
+                    deleteUpdateCallback("update", adapterPosition, task)
+                }
+            }
+        }
+    }
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
-        viewType: Int
-    ): ViewHolder {
-        return ViewHolder(
-            ViewTaskLayoutBinding.inflate(LayoutInflater.from(parent.context),
-                parent,
-                false
+        viewType: Int,
+    ): RecyclerView.ViewHolder {
+        return if (viewType == 1){  // Grid_Item
+            GridTaskViewHolder(
+                ViewTaskGridLayoutBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
             )
-        )
+        }else{  // List_Item
+            ListTaskViewHolder(
+                ViewTaskListLayoutBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+            )
+        }
     }
 
-    override fun onBindViewHolder(
-        holder: ViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val task = getItem(position)
-        holder.viewTaskLayoutBinding.titleTxt.text = task.title
-        holder.viewTaskLayoutBinding.descTxt.text = task.description
 
-        val dateFormatter = SimpleDateFormat("dd/MM/yyyy HH:mm:ss ",Locale.getDefault())
-        holder.viewTaskLayoutBinding.dateTxt.text = dateFormatter.format(task.date)
-
-        holder.viewTaskLayoutBinding.deleteImg.setOnClickListener {
-            if (holder.adapterPosition != -1) {
-                deleteUpdateCallback("delete", holder.adapterPosition, task)
-            }
+        if (isList.value!!){
+            (holder as ListTaskViewHolder).bind(task,deleteUpdateCallback)
+        }else{
+            (holder as GridTaskViewHolder).bind(task,deleteUpdateCallback)
         }
-        holder.viewTaskLayoutBinding.editImg.setOnClickListener {
-            if (holder.adapterPosition != -1) {
-                deleteUpdateCallback("update", holder.adapterPosition, task)
-            }
+
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return if (isList.value!!){
+            0 // List_Item
+        }else{
+            1 // Grid_Item
         }
     }
 
-    class DiffCallback : DiffUtil.ItemCallback<Task>(){
+
+
+    class DiffCallback : DiffUtil.ItemCallback<Task>() {
         override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
             return oldItem.id == newItem.id
         }
+
         override fun areContentsTheSame(oldItem: Task, newItem: Task): Boolean {
             return oldItem == newItem
         }

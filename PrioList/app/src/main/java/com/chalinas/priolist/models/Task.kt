@@ -5,13 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.Date
 
-@Entity(
-)
+@Entity()
 data class Task(
     @PrimaryKey(autoGenerate = false)
-    @ColumnInfo(name = "taksId")
+    @ColumnInfo(name = "taskId")
     val id: String,
-    @ColumnInfo
+    @ColumnInfo(name = "taskTitle")
     val title: String,
     val description: String,
     val date: Date,

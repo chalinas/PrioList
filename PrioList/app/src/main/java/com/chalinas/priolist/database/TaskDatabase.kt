@@ -17,7 +17,7 @@ import com.chalinas.priolist.models.Task
 @TypeConverters(TypeConverter::class)
 abstract class TaskDatabase : RoomDatabase() {
 
-    abstract val taskDao: TaskDao
+    abstract val taskDao : TaskDao
 
     companion object {
         @Volatile
@@ -32,6 +32,8 @@ abstract class TaskDatabase : RoomDatabase() {
                     INSTANCE = it
                 }
             }
+
         }
     }
+
 }
